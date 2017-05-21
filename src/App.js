@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   HashRouter as Router,
   Route,
@@ -35,12 +35,6 @@ const Topics = ({match}) => (
         </Link>
       </li>
     </ul>
-
-
-    <Route path={`${match.url}/:topicID`} component={Topic}/>
-    <Route exact path={match.url} render={() => (
-        <h3>Please select a topic.</h3>
-      )}/>
   </div>
 )
 
@@ -69,8 +63,9 @@ const App = () => (
       </ul>
 
       <Route exact path="/" component={Home}/>
-      <Route path="/topics" component={Topics}/>
+      <Route exact path="/topics" component={Topics}/>
       <Route path="/secret" component={Secret}/>
+      <Route path={`/topics/:topicID`} component={Topic}/>
     </div>
   </Router>
 )
