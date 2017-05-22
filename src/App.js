@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   HashRouter as Router,
   Route,
+  Redirect,
   Link
 } from 'react-router-dom';
+
+const Prompt = (props) => (
+  <div>
+    <form onSubmit={props.onSubmit}>
+      <input
+        onChange={props.onChange}
+        value={props.value}
+        placeholder="Enter Username..."
+        type="text"/>
+      <button
+        style={{backgroundColor : '#f51aff', color: 'white'}}
+        type="submit">
+        Lookup
+      </button>
+    </form>
+  </div>
+)
 
 const Topic = ({match}) => (
   <div>
@@ -50,24 +68,65 @@ const Secret = () => (
   </div>
 )
 
-const App = () => (
-  <Router>
-    <div>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/topics">Topics</Link>
-        </li>
-      </ul>
-
-      <Route exact path="/" component={Home}/>
-      <Route exact path="/topics" component={Topics}/>
-      <Route path="/secret" component={Secret}/>
-      <Route path={`/topics/:topicID`} component={Topic}/>
-    </div>
-  </Router>
+const UserInfo = (props) => (
+  <div>
+    <h3>{`[${props.match.params.userID}]`}</h3>
+  </div>
 )
+
+class App extends Component {
+  constructor() {
+    super()
+    this.state = {
+      value: '',
+      username: ''
+    }
+  }
+  handleChange = (e) => {
+    this.setState({
+      value: e.target.value
+    })
+  }
+  handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(this.state.value)
+    this.setState({
+      username: this.state.value,
+      value: ''
+    })
+  }
+
+  render() {
+    return (
+      <Router>
+        <div>
+          <Route path="/" render={() => (
+              // this method needs tweaking for subsequent usernames
+              this.state.username ? <Redirect to={`/usertown/${this.state.username}`} /> : <Home/>
+          )}/>
+        <Route path="/usertown/:userID" component={UserInfo}/>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/topics">Topics</Link>
+            </li>
+          </ul>
+          <div>
+            <Prompt
+              onSubmit={this.handleSubmit}
+              onChange={this.handleChange}
+              value={this.state.value} />
+        </div>
+
+          <Route exact path="/topics" component={Topics}/>
+          <Route path="/secret" component={Secret}/>
+          <Route path={`/topics/:topicID`} component={Topic}/>
+        </div>
+      </Router>
+    )
+  }
+}
 
 export default App;
